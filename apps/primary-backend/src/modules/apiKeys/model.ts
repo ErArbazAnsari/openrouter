@@ -38,11 +38,31 @@ export namespace ApiKeyModel {
     export type disableApiKeyResponseSchema =
         typeof disableApiKeyResponseSchema.static;
 
+    export const enableApiKeySchema = t.Object({
+        id: t.String(),
+    });
+
+    export type enableApiKeySchema = typeof enableApiKeySchema.static;
+
+    export const enableApiKeyErrorSchema = t.Object({
+        message: t.Literal("Unable to enable the api"),
+    });
+
+    export type enableApiKeyErrorSchema = typeof enableApiKeyErrorSchema.static;
+
+    export const enableApiKeyResponseSchema = t.Object({
+        message: t.Literal("Enabled api key successfully"),
+    });
+
+    export type enableApiKeyResponseSchema =
+        typeof enableApiKeyResponseSchema.static;
+
     export const getApiKeysResponseSchema = t.Array(
         t.Object({
+            id: t.String(),
             name: t.String(),
             apiKey: t.String(),
-            lastUsed: t.String(),
+            lastUsed: t.Nullable(t.Date()),
             creditsConsumed: t.Number(),
             isDisabled: t.Boolean(),
         }),

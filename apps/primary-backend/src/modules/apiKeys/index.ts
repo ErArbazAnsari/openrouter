@@ -58,6 +58,36 @@ export const app = new Elysia({ prefix: "api-keys" })
         },
     )
     .post(
+        "/enable",
+        async ({ userId, status, body }) => {
+            try {
+                const updated = await ApiKeyService.enableApiKey(
+                    userId,
+                    body.id,
+                );
+                if (updated) {
+                    return status(200, {
+                        message: "Enabled api key successfully",
+                    });
+                } else {
+                    return status(411, {
+                        message: "Unable to enable the api",
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+                return status(411, { message: "Unable to enable the api" });
+            }
+        },
+        {
+            body: ApiKeyModel.enableApiKeySchema,
+            response: {
+                200: ApiKeyModel.enableApiKeyResponseSchema,
+                411: ApiKeyModel.enableApiKeyErrorSchema,
+            },
+        },
+    )
+    .post(
         "/disable",
         async ({ userId, status, body }) => {
             try {
@@ -70,20 +100,20 @@ export const app = new Elysia({ prefix: "api-keys" })
                         message: "Disabled api key successfully",
                     });
                 } else {
-                    return status(400, {
+                    return status(411, {
                         message: "Unable to disable the api",
                     });
                 }
             } catch (error) {
                 console.log(error);
-                return status(400, { message: "Unable to disable the api" });
+                return status(411, { message: "Unable to disable the api" });
             }
         },
         {
             body: ApiKeyModel.disableApiKeySchema,
             response: {
                 200: ApiKeyModel.disableApiKeyResponseSchema,
-                400: ApiKeyModel.disableApiKeyErrorSchema,
+                411: ApiKeyModel.disableApiKeyErrorSchema,
             },
         },
     )
@@ -100,20 +130,20 @@ export const app = new Elysia({ prefix: "api-keys" })
                         message: "api key deleted successfully",
                     });
                 } else {
-                    return status(400, {
+                    return status(411, {
                         message: "unable to delete api key",
                     });
                 }
             } catch (error) {
                 console.log(error);
-                return status(400, { message: "unable to delete api key" });
+                return status(411, { message: "unable to delete api key" });
             }
         },
         {
             body: ApiKeyModel.deleteApiKeySchema,
             response: {
                 200: ApiKeyModel.deleteApiKeyResponseSchema,
-                400: ApiKeyModel.deleteApiKeyErrorSchema,
+                411: ApiKeyModel.deleteApiKeyErrorSchema,
             },
         },
     );

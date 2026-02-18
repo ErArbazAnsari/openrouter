@@ -20,9 +20,10 @@ export abstract class ApiKeyService {
 
     static async getApiKeys(userId: string): Promise<
         {
+            id: string;
             name: string;
             apiKey: string;
-            lastUsed: string;
+            lastUsed: Date | null;
             creditsConsumed: number;
             isDisabled: boolean;
         }[]
@@ -33,13 +34,28 @@ export abstract class ApiKeyService {
             },
         });
         let res = apiKeys.map((key) => ({
+            id: key.id.toString(),
             name: key.name,
             apiKey: key.apiKey,
-            lastUsed: key.lastUsed ? key.lastUsed.toString() : "",
+            lastUsed: key.lastUsed ? key.lastUsed : null,
             creditsConsumed: key.creditsConsumed,
             isDisabled: key.disable,
         }));
         return res;
+    }
+
+    static async enableApiKey(userId: string, apiId: string): Promise<boolean> {
+        const updated = await prisma.apiKey.update({
+            where: {
+                id: parseInt(apiId),
+                userId: parseInt(userId),
+            },
+            data: {
+                disable: false,
+            },
+        });
+        if (updated) return true;
+        else return false;
     }
 
     static async disableApiKey(
