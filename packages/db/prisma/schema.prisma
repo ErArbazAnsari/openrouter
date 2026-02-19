@@ -101,6 +101,7 @@ model Conversation {
   output                 String
   inputTokenCount        Int
   outputTokenCount       Int
+  totalCreditsConsumed   Int                  @default(0)
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
   user                   User                 @relation(fields: [userId], references: [id])
