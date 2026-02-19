@@ -14,13 +14,15 @@ datasource db {
 }
 
 model User {
-  id                Int                 @id @default(autoincrement())
-  email             String              @unique
-  password          String
-  credits           Int                 @default(0)
-  apiKeys           ApiKey[]
-  onrampTransations OnRampTransaction[]
-  conversations     Conversation[]
+  id                 Int                 @id @default(autoincrement())
+  email              String              @unique
+  password           String
+  credits            Int                 @default(0)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  apiKeys            ApiKey[]
+  onRampTransactions OnRampTransaction[]
+  conversations      Conversation[]
 }
 
 model ApiKey {
@@ -32,15 +34,19 @@ model ApiKey {
   lastUsed        DateTime?
   creditsConsumed Int            @default(0)
   deleted         Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
   user            User           @relation(fields: [userId], references: [id])
   conversations   Conversation[]
 }
 
 model Company {
-  id      Int     @id @default(autoincrement())
-  name    String
-  website String
-  models  Model[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  website   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  models    Model[]
 }
 
 model Model {
@@ -48,6 +54,8 @@ model Model {
   name                  String
   companyId             Int
   slug                  String
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
   company               Company                @relation(fields: [companyId], references: [id])
   modelProviderMappings ModelProviderMapping[]
 }
@@ -56,6 +64,8 @@ model Provider {
   id                    Int                    @id @default(autoincrement())
   name                  String
   website               String
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
   modelProviderMappings ModelProviderMapping[]
 }
 
@@ -65,17 +75,21 @@ model ModelProviderMapping {
   providerId      Int
   inputTokenCost  Int
   outputTokenCost Int
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
   model           Model          @relation(fields: [modelId], references: [id])
   provider        Provider       @relation(fields: [providerId], references: [id])
   conversations   Conversation[]
 }
 
 model OnRampTransaction {
-  id     Int    @id @default(autoincrement())
-  userId Int
-  amount Int
-  status String
-  user   User   @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  amount    Int
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Conversation {
@@ -87,6 +101,8 @@ model Conversation {
   output                 String
   inputTokenCount        Int
   outputTokenCount       Int
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
   user                   User                 @relation(fields: [userId], references: [id])
   apiKey                 ApiKey               @relation(fields: [apiKeyId], references: [id])
   modelProviderMapping   ModelProviderMapping @relation(fields: [modelProviderMappingId], references: [id])

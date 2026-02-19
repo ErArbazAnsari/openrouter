@@ -6,6 +6,13 @@
     "exports": {
         ".": "./index.ts"
     },
+    "scripts": {
+        "db:migrate": "bunx prisma migrate",
+        "db:migrate_dev": "bunx prisma migrate dev",
+        "db:generate": "bunx prisma generate",
+        "db:reset": "bunx prisma migrate reset",
+        "db:studio": "bunx prisma studio"
+    },
     "devDependencies": {
         "@types/bun": "latest",
         "@types/pg": "^8.16.0",

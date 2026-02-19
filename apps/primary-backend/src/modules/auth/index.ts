@@ -102,4 +102,36 @@ export const app = new Elysia({ prefix: "auth" })
                 200: AuthModel.logoutResponseSchema,
             },
         },
+    )
+    .get(
+        "/profile",
+        async ({ cookie: { auth }, jwt }) => {
+            try {
+                if (!auth.value || typeof auth.value !== "string") {
+                    return {
+                        message: "Unable to fetch profile",
+                    };
+                }
+                const payload = await jwt.verify(auth.value);
+                if (!payload || !payload.userId) {
+                    return {
+                        message: "Unable to fetch profile",
+                    };
+                }
+                const profile = await AuthService.getProfile(
+                    String(payload.userId),
+                );
+                return profile;
+            } catch (error) {
+                return {
+                    message: "Unable to fetch profile",
+                };
+            }
+        },
+        {
+            response: {
+                200: AuthModel.profileResponseSchema,
+                400: AuthModel.profileErrorSchema,
+            },
+        },
     );
