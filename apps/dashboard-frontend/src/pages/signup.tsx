@@ -1,19 +1,48 @@
-import { treaty } from "@elysiajs/eden"
-import type { App } from "primary-backend"
-import { useState, type FormEvent } from "react"
+import type { FormEvent } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useElysiaClient } from "@/providers/Eden"
+import { useAuth } from "@/hooks/useAuth"
+import { useMutation } from "@tanstack/react-query"
 
 const Signup = () => {
     const navigate = useNavigate()
+    const elysiaClient = useElysiaClient();
+    const { isAuthenticated, isLoading: authLoading } = useAuth()
+
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
-    const [loading, setLoading] = useState(false)
 
-    const client = treaty<App>('localhost:3000')
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (!authLoading && isAuthenticated) {
+            navigate("/dashboard", { replace: true })
+        }
+    }, [isAuthenticated, authLoading, navigate])
+
+    const signupMutation = useMutation({
+        mutationFn: async () => {
+            const response = await elysiaClient.auth["sign-up"].post({ email, password })
+            if (response.error) {
+                throw new Error(response.error?.value?.message || "Signup failed")
+            }
+            return response.data
+        },
+        onSuccess: () => {
+            setEmail("")
+            setPassword("")
+            setConfirmPassword("")
+            toast.success("Account created successfully")
+            navigate("/dashboard")
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        },
+    })
 
     async function handleSignup(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -28,25 +57,18 @@ const Signup = () => {
             return
         }
 
-        setLoading(true)
+        signupMutation.mutate()
+    }
 
-        try {
-            const { data, error } = await client.auth["sign-up"].post({ email, password })
-            if (!error && data) {
-                setEmail("")
-                setPassword("")
-                setConfirmPassword("")
-                toast.success("Account created successfully")
-                navigate("/dashboard")
-                return
-            } else {
-                toast.error(error?.value?.message || "Signup failed")
-            }
-        } catch (err) {
-            toast.error("An error occurred during signup")
-        } finally {
-            setLoading(false)
-        }
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="text-center">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    <p className="mt-4 text-muted-foreground">Checking authentication...</p>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -99,11 +121,11 @@ const Signup = () => {
                         </div>
                         <Button
                             type="submit"
-                            disabled={loading}
+                            disabled={signupMutation.isPending}
                             className="w-full"
                             size="lg"
                         >
-                            {loading ? "Signing up..." : "Sign Up"}
+                            {signupMutation.isPending ? "Signing up..." : "Sign Up"}
                         </Button>
                     </form>
                     <p className="mt-6 text-center text-sm text-muted-foreground">

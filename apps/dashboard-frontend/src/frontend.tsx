@@ -9,12 +9,17 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import { ToastContainer } from "react-toastify";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 const elem = document.getElementById("root")!;
+const queryClient = new QueryClient()
+
 const app = (
   <StrictMode>
-    <App />
-    <ToastContainer position="bottom-right" />
+    <QueryClientProvider client={queryClient}>
+      <App />
+      <ToastContainer position="bottom-right" />
+    </QueryClientProvider>
   </StrictMode>
 );
 

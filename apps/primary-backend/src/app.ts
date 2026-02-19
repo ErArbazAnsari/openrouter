@@ -9,6 +9,7 @@ export const app = new Elysia()
     .use(
         cors({
             origin: process.env.ORIGIN_URL!,
+            credentials: true,
         }),
     )
     .use(authApp)

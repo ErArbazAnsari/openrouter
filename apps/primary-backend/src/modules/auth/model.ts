@@ -33,4 +33,15 @@ export namespace AuthModel {
     });
     export type signUpFailedResponseSchema =
         typeof signUpFailedResponseSchema.static;
+
+    export const verifyResponseSchema = t.Object({
+        authenticated: t.Boolean(),
+        userId: t.Nullable(t.String()),
+    });
+    export type verifyResponseSchema = typeof verifyResponseSchema.static;
+
+    export const logoutResponseSchema = t.Object({
+        message: t.Literal("logged out successfully"),
+    });
+    export type logoutResponseSchema = typeof logoutResponseSchema.static;
 }
