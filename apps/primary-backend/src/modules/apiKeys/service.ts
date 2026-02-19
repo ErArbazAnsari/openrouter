@@ -31,6 +31,7 @@ export abstract class ApiKeyService {
         const apiKeys = await prisma.apiKey.findMany({
             where: {
                 userId: parseInt(userId),
+                deleted: false, // Only fetch non-deleted keys
             },
         });
         let res = apiKeys.map((key) => ({

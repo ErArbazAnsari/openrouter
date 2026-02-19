@@ -121,10 +121,7 @@ export const app = new Elysia({ prefix: "api-keys" })
         "/:id",
         async ({ userId, status, params: { id } }) => {
             try {
-                const updated = await ApiKeyService.deleteApiKey(
-                    userId,
-                    id,
-                );
+                const updated = await ApiKeyService.deleteApiKey(userId, id);
                 if (updated) {
                     return status(200, {
                         message: "api key deleted successfully",
