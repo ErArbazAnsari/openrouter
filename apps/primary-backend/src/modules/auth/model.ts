@@ -33,4 +33,33 @@ export namespace AuthModel {
     });
     export type signUpFailedResponseSchema =
         typeof signUpFailedResponseSchema.static;
+
+    export const verifyResponseSchema = t.Object({
+        authenticated: t.Boolean(),
+        userId: t.Nullable(t.String()),
+    });
+    export type verifyResponseSchema = typeof verifyResponseSchema.static;
+
+    export const logoutResponseSchema = t.Object({
+        message: t.Literal("logged out successfully"),
+    });
+    export type logoutResponseSchema = typeof logoutResponseSchema.static;
+
+    export const profileResponseSchema = t.Object({
+        id: t.String(),
+        email: t.String(),
+        credits: t.Number(),
+        createdAt: t.Optional(t.Date()),
+    });
+    export type profileResponseSchema = typeof profileResponseSchema.static;
+
+    export const profileErrorSchema = t.Object({
+        message: t.Literal("Unable to fetch profile"),
+    });
+    export type profileErrorSchema = typeof profileErrorSchema.static;
+
+    export const profileErrorSchemaUnauth = t.Object({
+        message: t.Literal("Unable to fetch profile"),
+    });
+    export type profileErrorSchemaUnauth = typeof profileErrorSchemaUnauth.static;
 }

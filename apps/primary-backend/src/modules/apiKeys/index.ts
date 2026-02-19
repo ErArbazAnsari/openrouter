@@ -118,13 +118,10 @@ export const app = new Elysia({ prefix: "api-keys" })
         },
     )
     .delete(
-        "/delete",
-        async ({ userId, status, body }) => {
+        "/:id",
+        async ({ userId, status, params: { id } }) => {
             try {
-                const updated = await ApiKeyService.deleteApiKey(
-                    userId,
-                    body.id,
-                );
+                const updated = await ApiKeyService.deleteApiKey(userId, id);
                 if (updated) {
                     return status(200, {
                         message: "api key deleted successfully",
@@ -140,7 +137,6 @@ export const app = new Elysia({ prefix: "api-keys" })
             }
         },
         {
-            body: ApiKeyModel.deleteApiKeySchema,
             response: {
                 200: ApiKeyModel.deleteApiKeyResponseSchema,
                 411: ApiKeyModel.deleteApiKeyErrorSchema,

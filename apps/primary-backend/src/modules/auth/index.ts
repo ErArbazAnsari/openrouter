@@ -61,4 +61,77 @@ export const app = new Elysia({ prefix: "auth" })
                 403: AuthModel.signInFailedSchema,
             },
         },
+    )
+    .get(
+        "/verify",
+        async ({ cookie: { auth }, jwt }) => {
+            try {
+                if (!auth.value || typeof auth.value !== "string") {
+                    return { authenticated: false, userId: null };
+                }
+                const payload = await jwt.verify(auth.value);
+                if (payload && payload.userId) {
+                    return {
+                        authenticated: true,
+                        userId: String(payload.userId),
+                    };
+                }
+                return { authenticated: false, userId: null };
+            } catch (error) {
+                return { authenticated: false, userId: null };
+            }
+        },
+        {
+            response: {
+                200: AuthModel.verifyResponseSchema,
+            },
+        },
+    )
+    .post(
+        "/logout",
+        async ({ cookie: { auth } }) => {
+            auth.set({
+                value: "",
+                httpOnly: true,
+                maxAge: 0,
+            });
+            return { message: "logged out successfully" };
+        },
+        {
+            response: {
+                200: AuthModel.logoutResponseSchema,
+            },
+        },
+    )
+    .get(
+        "/profile",
+        async ({ cookie: { auth }, jwt }) => {
+            try {
+                if (!auth.value || typeof auth.value !== "string") {
+                    return {
+                        message: "Unable to fetch profile",
+                    };
+                }
+                const payload = await jwt.verify(auth.value);
+                if (!payload || !payload.userId) {
+                    return {
+                        message: "Unable to fetch profile",
+                    };
+                }
+                const profile = await AuthService.getProfile(
+                    String(payload.userId),
+                );
+                return profile;
+            } catch (error) {
+                return {
+                    message: "Unable to fetch profile",
+                };
+            }
+        },
+        {
+            response: {
+                200: AuthModel.profileResponseSchema,
+                400: AuthModel.profileErrorSchema,
+            },
+        },
     );
