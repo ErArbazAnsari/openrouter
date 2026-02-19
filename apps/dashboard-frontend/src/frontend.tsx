@@ -8,11 +8,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import { ToastContainer } from "react-toastify";
 
 const elem = document.getElementById("root")!;
 const app = (
   <StrictMode>
     <App />
+    <ToastContainer position="bottom-right" />
   </StrictMode>
 );
 
